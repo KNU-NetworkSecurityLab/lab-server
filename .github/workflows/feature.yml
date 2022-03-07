@@ -6,6 +6,7 @@ on:
 
 jobs:
   unittest:
+    name: Unit Test
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +25,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      
+
       # 유닛 테스트
       - name: Run Unit Test
         run:
