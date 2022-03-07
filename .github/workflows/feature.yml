@@ -1,0 +1,30 @@
+name: CI-Unittest
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 현재 레포지토리 코드 업로드
+      - uses: actions/checkout@v2
+
+      # 정상적으로 clone 되었는지 확인
+      - name: Run pwd
+        run: pwd
+      - name: Check directory
+        run: ls -al
+
+      # Java JDK 설치
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+      
+      # 유닛 테스트
+      - name: Run Unit Test
+        run:
+          ./gradlew test
