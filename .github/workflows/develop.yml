@@ -1,0 +1,69 @@
+name: CI Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 현재 레포지토리 코드 업로드
+      - name: Checkout my code
+        uses: actions/checkout@v2
+
+      # 정상적으로 clone 되었는지 확인
+      - name: Run pwd
+        run: pwd
+      - name: Check directory
+        run: ls -al
+
+      # Java JDK 설치
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      
+      # 유닛 테스트
+      - name: Run Unit Test
+        run:
+          ./gradlew test
+  
+  build:
+    runs-on: ubuntu-latest
+    needs: unittest
+
+    steps:
+      # 현재 레포지토리 코드 업로드
+      - name: Checkout my code
+        uses: actions/checkout@v2
+
+      # JAVA 빌드
+      - name: Spring Build, Make .jar
+        run:
+          ./gradlew build
+
+      # Docker 및 Docker Hub 세팅
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      
+      # Docker Hub 로그인, GitHub Secret 사용
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      # Docker Build, Docker Hub Push
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: knunslab/lab-server:1.0.0,knunslab/lab-server:latest
