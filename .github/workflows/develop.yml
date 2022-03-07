@@ -47,6 +47,11 @@ jobs:
         run:
           ./gradlew build
 
+      # .jar 파일 확인
+      - name: Check Build
+        run: |
+          ls -al ./build/libs
+
       # Docker 및 Docker Hub 세팅
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
