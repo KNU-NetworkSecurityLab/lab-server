@@ -50,6 +50,7 @@ jobs:
       # .jar 파일 확인
       - name: Check Build
         run: |
+          pwd
           ls -al ./build/libs
 
       # Docker 및 Docker Hub 세팅
