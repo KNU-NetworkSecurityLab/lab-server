@@ -1,10 +1,11 @@
-name: CI Build
+name: CD Deploy
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ master ]
+    tags: [ 'v*' ]
   pull_request:
-    branches: [ develop ]
+    branches: [ master ]
 
 jobs:
   unittest:
@@ -77,3 +78,20 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labes }}
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+
+    # 배포는 추후 작성
+    steps:
+      # 현재 레포지토리 코드 업로드
+      - name: Checkout my code
+        uses: actions/checkout@v2
+
+      # 정상적으로 clone 되었는지 확인
+      - name: Run pwd
+        run: pwd
+      - name: Check directory
+        run: ls -al
