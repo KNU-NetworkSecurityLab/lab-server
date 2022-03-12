@@ -32,7 +32,6 @@ jobs:
       # 유닛 테스트
       - name: Run Unit Test
         run:
-          mkdir -p /app/logs
           ./gradlew test
 
   build:
@@ -48,7 +47,6 @@ jobs:
       # JAVA 빌드
       - name: Spring Build, Make .jar
         run:
-          mkdir -p /app/logs
           ./gradlew build
 
       # Docker 설정
