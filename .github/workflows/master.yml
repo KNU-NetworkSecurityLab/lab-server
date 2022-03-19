@@ -67,7 +67,7 @@ jobs:
 
       # Docker Hub 로그인, GitHub Secret 사용
       - name: Login to DockerHub
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
