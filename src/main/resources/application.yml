@@ -1,7 +1,10 @@
-
-
-
-
+# MySQL 데이터베이스 세팅(local)
+spring:
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/nsl?serverTimezone=UTC&characterEncoding=UTF-8
+        username: root
+        password: 1q2w3e4r!!
 
 logging:
     level:
