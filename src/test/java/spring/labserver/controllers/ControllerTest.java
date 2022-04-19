@@ -9,8 +9,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import spring.labserver.controllers.MainController;
-
 @WebMvcTest(controllers = MainController.class)
 public class ControllerTest {
 
