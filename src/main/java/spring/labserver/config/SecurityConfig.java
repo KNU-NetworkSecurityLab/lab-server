@@ -5,9 +5,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
 
 import lombok.RequiredArgsConstructor;
+import spring.labserver.filters.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -18,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // http.addFilterBefore(new JwtAuthenticationFilter(), BasicAuthenticationFilter.class);
+        // http.addFilterBefore(new JwtAuthenticationFilter(), SecurityContextPersistenceFilter.class);
         // csrf disable
         http.csrf().disable();
         // 세션을 만드는 방식을 사용하지 않겠다는 의미, STATELESS서버(세션 없는 서버)로 만들겠다.

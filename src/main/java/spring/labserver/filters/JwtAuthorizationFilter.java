@@ -1,5 +1,4 @@
 package spring.labserver.filters;
-// 인가
 
 import java.io.IOException;
 
@@ -9,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+// 인가
 public class JwtAuthorizationFilter implements Filter {
 
     @Override
