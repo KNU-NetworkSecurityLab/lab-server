@@ -9,9 +9,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserResponseDto {
     
-    private final String id;
+    private final String userId;
     private final String name;
+    private final String password;
     private final String phone;
     private final String mail;
-
+    private final String role;
 }

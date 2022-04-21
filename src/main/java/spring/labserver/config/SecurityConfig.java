@@ -5,11 +5,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
 
 import lombok.RequiredArgsConstructor;
-import spring.labserver.filters.JwtAuthenticationFilter;
+import spring.labserver.config.jwt.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -34,6 +33,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         // httpBasic는 헤더에 ID와 PW를 담아서 보내는 방식
         // JWT는 헤더에 ID와 PW에 해당하는 정보를 포함한 토큰을 담음
         .httpBasic().disable()
+        // AuthenticationManager을 던져야 함
+        .addFilter(new JwtAuthenticationFilter(authenticationManager()))
         .authorizeRequests()
         // user api에는 user, manager, admin 접근가능
         .antMatchers("/api/v1/user/**")
@@ -46,5 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         .access("hasRole('ROLE_ADMIN')")
         // 그외 API
         .anyRequest().permitAll();
+        // 사용자 로그인 쓰려면 다음코드 사용 (formLogin able해야함)
+        // .and()
+        // .formLogin()
+        // .loginProcessingUrl("/loginProc");
     }
 }

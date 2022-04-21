@@ -1,4 +1,4 @@
-package spring.labserver.models;
+package spring.labserver.domain.user;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,15 +6,19 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 // Getter 메소드 추가
 @Getter
+@Setter
 // 인자없는 기본 생성자 추가
 @NoArgsConstructor
 // 테이블과 링크될 엔티티 클래스임을 선언
@@ -26,21 +30,26 @@ import lombok.NoArgsConstructor;
 public class User {
     // PK키 설정
     @Id
-    private String id;    
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;    
 
-    @Column(columnDefinition = "VARCHAR(20)", nullable = false)
+    @Column(nullable = false)
+    private String userId;
+
+    @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(nullable = false)
     private String password;
 
-    @Column(columnDefinition = "VARCHAR(50)",nullable = false)
+    @Column(nullable = false)
     private String mail;
 
-    @Column(columnDefinition = "VARCHAR(30)", nullable = false)
+    @Column(nullable = false)
     private String phone;
 
     // USER, ADMIN, GUEST
+    @Column(nullable = false)
     private String role;
     
     // 역할 반환
@@ -52,8 +61,8 @@ public class User {
     }
 
     @Builder
-    public User(String id, String name, String password, String mail, String phone, String role) {
-        this.id = id;
+    public User(String userId, String name, String password, String mail, String phone, String role) {
+        this.userId = userId;
         this.name = name;
         this.password = password;
         this.mail = mail;
