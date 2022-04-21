@@ -1,5 +1,6 @@
 package spring.labserver.controllers;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import spring.labserver.dto.UserResponseDto;
 public class UserController {
     
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // USER, ADMIN 접근 가능
     @GetMapping("user")
@@ -39,7 +41,7 @@ public class UserController {
     
     @PostMapping("/join")
     public String join(@RequestBody User user) {
-        user.setPassword(user.getPassword());
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setRole("ROLE_USER");
         userRepository.save(user);
         return "회원가입완료";

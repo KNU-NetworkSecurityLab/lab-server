@@ -6,11 +6,13 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.Data;
 import spring.labserver.domain.user.User;
 
 // JWT는 Authentication 객체 안에 사용자 정보를 가진 토큰을 저장하는데, 해당 사용자 정보를 UserDetails에 저장함
 // UserDetails를 상속 받음으로써 사용자 정보를 담은 토큰에 접근할 수 있음
 
+@Data
 public class PrincipalDetails implements UserDetails{
     
     // 서버가 작성한 도메인
