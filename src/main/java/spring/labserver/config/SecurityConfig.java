@@ -1,32 +1,35 @@
 package spring.labserver.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.web.filter.CorsFilter;
 
-import lombok.RequiredArgsConstructor;
 import spring.labserver.config.jwt.JwtAuthenticationFilter;
+import spring.labserver.config.jwt.JwtAuthorizationFilter;
+import spring.labserver.domain.user.UserRepository;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
-    private final CorsFilter corsFilter;
+    @Autowired
+    private CorsConfig corsConfig;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // http.addFilterBefore(new JwtAuthenticationFilter(), SecurityContextPersistenceFilter.class);
-        // csrf disable
-        http.csrf().disable();
-        // 세션을 만드는 방식을 사용하지 않겠다는 의미, STATELESS서버(세션 없는 서버)로 만들겠다.
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
         // 모든 요청은 corsFilter를 거침
-        .addFilter(corsFilter)
+        http.addFilter(corsConfig.corsFilter())
+        // csrf disable
+        .csrf().disable()
+        // 세션을 만드는 방식을 사용하지 않겠다는 의미, STATELESS서버(세션 없는 서버)로 만들겠다.
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
         // form 태그로 로그인을 사용하지 않음
         .formLogin().disable()
         // 기본적인 http 로그인 방식을 사용하지 않음
@@ -35,21 +38,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         .httpBasic().disable()
         // AuthenticationManager을 던져야 함
         .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+        .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
         .authorizeRequests()
-        // user api에는 user, manager, admin 접근가능
+        // user api에는 user, admin 접근가능
         .antMatchers("/api/v1/user/**")
-        .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-        // manager api에는 manager, admin만 접근가능
-        .antMatchers("/api/v1/manager/**")
-        .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+        .access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
         // admin api에는 admin만 접근가능
         .antMatchers("/api/v1/admin/**")
         .access("hasRole('ROLE_ADMIN')")
         // 그외 API
+        // .antMatchers("/api/v1/**").permitAll()
         .anyRequest().permitAll();
-        // 사용자 로그인 쓰려면 다음코드 사용 (formLogin able해야함)
-        // .and()
-        // .formLogin()
-        // .loginProcessingUrl("/loginProc");
     }
 }

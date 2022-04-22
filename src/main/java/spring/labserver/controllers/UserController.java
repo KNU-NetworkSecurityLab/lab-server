@@ -14,7 +14,7 @@ import spring.labserver.domain.user.UserRepository;
 import spring.labserver.dto.UserResponseDto;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class UserController {
     
@@ -22,13 +22,13 @@ public class UserController {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // USER, ADMIN 접근 가능
-    @GetMapping("user")
+    @GetMapping("/user")
     public String user() {
         return "user";
     }
 
     // ADMIN 접근 가능
-    @GetMapping("admin")
+    @GetMapping("/admin")
     public String admin() {
         return "admin";
     }
@@ -46,4 +46,5 @@ public class UserController {
         userRepository.save(user);
         return "회원가입완료";
     }
+
 }

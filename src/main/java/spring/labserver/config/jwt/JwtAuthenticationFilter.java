@@ -39,16 +39,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // 사용자의 id와 password 받기
         try {
-            // BufferedReader br = request.getReader();
-
-            // String input = null;
-            // while((input = br.readLine()) != null) {
-            //     System.out.println(input);
-            // }
             ObjectMapper om = new ObjectMapper();
             User user = om.readValue(request.getInputStream(), User.class);
-            System.out.println(user);
-
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUserId(), user.getPassword());
 
             // PrincipalDetailsService의 loadUserByUsername() 함수가 실행됨
@@ -56,9 +48,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // DB에 있는 userId와 password가 일치한다
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-            // 아래 구문이 출력된다는 것은 로그인이 되었다는 의미
-            System.out.println("로그인 완료 : " + principalDetails.getUser().getUserId());
             // authentication 객체를 session 영역에 저장하고 그걸 return 해주면 됨
             // 리턴하는 이유는 권한 관리를 security가 대신 해주기 때문에 편함
             // 굳이 JWT 토큰을 사용하면서 세션을 만들 이유가 없음 단지 권한 처리 때문에 session을 넣어 줌
@@ -84,12 +73,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String jwtToken = JWT.create()
             .withSubject("nsl토큰")
             // 만료시간 10분
-            .withExpiresAt(new Date(System.currentTimeMillis() + (60000 * 10)))
+            .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
             // 비공개 클래임으로 키-밸류 값 
             .withClaim("id", principalDetails.getUser().getId())
             .withClaim("userId", principalDetails.getUser().getUserId())
-            .sign(Algorithm.HMAC512("secretKey"));
+            .sign(Algorithm.HMAC512(JwtProperties.SECRET));
 
-        response.addHeader("Authorization", "Bearer " + jwtToken);
+        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
     }
 }

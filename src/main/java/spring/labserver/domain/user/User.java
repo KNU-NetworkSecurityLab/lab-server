@@ -13,9 +13,7 @@ import javax.persistence.Table;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 // Getter 메소드 추가
 @Data
@@ -48,12 +46,12 @@ public class User {
     @Column(nullable = false)
     private String phone;
 
-    // USER, ADMIN, GUEST
+    // USER,ADMIN,GUEST
     @Column(nullable = false)
     private String role;
     
     // 역할 반환
-    // ENUM으로 안하고  ,로 구분해서 ROLE을 입력한뒤 그걸 파싱
+    // ENUM으로 안하고 ,로 구분해서 ROLE을 입력한뒤 그걸 파싱
     public List<String> getRoleList() {
         if(this.role.length() > 0) {
             return Arrays.asList(this.role.split(","));
