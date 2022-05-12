@@ -21,6 +21,22 @@ public class UserController {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    // 회원 가입
+    @PostMapping("/signup")
+    public String signup(@RequestBody User user) {
+        // bCryptPasswordEncoder는 비밀번호를 암호화 하는데 사용 됨
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setRole("ROLE_USER");
+
+        // 중복된 아이디가 있는지 확인
+        if(userRepository.existsByUserId(user.getUserId())) {
+            return "fail: 중복된 아이디가 있습니다.";
+        } else {
+            userRepository.save(user);
+            return "success";    
+        }
+    }
+
     // USER, ADMIN 접근 가능
     @GetMapping("/user")
     public String user() {
@@ -39,12 +55,6 @@ public class UserController {
             return new UserResponseDto(userId, name, password, phone, mail, role);
     }
     
-    @PostMapping("/join")
-    public String join(@RequestBody User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setRole("ROLE_USER");
-        userRepository.save(user);
-        return "회원가입완료";
-    }
+    
 
 }

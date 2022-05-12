@@ -72,7 +72,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // Hash 암호 방식
         String jwtToken = JWT.create()
             .withSubject("nsl토큰")
-            // 만료시간 10분
+            // 만료시간 30분
             .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
             // 비공개 클래임으로 키-밸류 값 
             .withClaim("id", principalDetails.getUser().getId())

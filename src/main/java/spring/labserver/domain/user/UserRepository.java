@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserRepository extends JpaRepository<User, Long> {
     // findBy~~ 로 시작해서 엔티티로부터 쿼리를 요청하는 메소드 생성
     public User findByUserId(String userId);
+    public boolean existsByUserId(String userId);
 }
