@@ -96,7 +96,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 // JSON으로 만들기 위해 Map으로 데이터 저장 
                 Map<String, Object> errorMessage = new HashMap<>();               
                 // errorMessage.put("StatusCode", HttpStatus.UNAUTHORIZED.value());
-                errorMessage.put("msg", "token expired");
+                errorMessage.put("msg", "Token Expired");
 
                 // JSON 형태로 메시지 생성
                 new ObjectMapper().writeValue(response.getOutputStream(), errorMessage);    
@@ -109,20 +109,20 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 // JSON으로 만들기 위해 Map으로 데이터 저장 
                 Map<String, Object> errorMessage = new HashMap<>();               
                 // errorMessage.put("StatusCode", HttpStatus.UNAUTHORIZED.value());
-                errorMessage.put("msg", "token wrong");
+                errorMessage.put("msg", "Token Wrong");
 
                 // JSON 형태로 메시지 생성
                 new ObjectMapper().writeValue(response.getOutputStream(), errorMessage);    
             
             // 토큰에 대한 ID가 존재하지 않을 때
             } catch(NullPointerException e) {
-                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
                 // JSON으로 만들기 위해 Map으로 데이터 저장 
                 Map<String, Object> errorMessage = new HashMap<>();               
                 // errorMessage.put("StatusCode", HttpStatus.UNAUTHORIZED.value());
-                errorMessage.put("msg", "ID not found");
+                errorMessage.put("msg", "Authorization Failed");
 
                 // JSON 형태로 메시지 생성
                 new ObjectMapper().writeValue(response.getOutputStream(), errorMessage);    
@@ -130,15 +130,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // 그 외 예외처리            
             } catch(BadCredentialsException | JWTVerificationException e) {
                 // 인증이 실패했을 때 이런 예외가 발생하면 이런 예외를 던짐
-                System.out.println("인증 실패");
-
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
                 // JSON으로 만들기 위해 Map으로 데이터 저장 
                 Map<String, Object> errorMessage = new HashMap<>();               
                 // errorMessage.put("StatusCode", HttpStatus.UNAUTHORIZED.value());
-                errorMessage.put("msg", "access denied");
+                errorMessage.put("msg", "Authorization Failed");
 
                 // JSON 형태로 메시지 생성
                 new ObjectMapper().writeValue(response.getOutputStream(), errorMessage);

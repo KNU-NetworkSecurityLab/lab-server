@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -59,7 +60,40 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 굳이 JWT 토큰을 사용하면서 세션을 만들 이유가 없음 단지 권한 처리 때문에 session을 넣어 줌
 
             return authentication;
-        } catch (IOException e) {
+
+        // 로그인 하려는 ID가 없을 때
+        } catch(NullPointerException e) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+            // JSON으로 만들기 위해 Map으로 데이터 저장 
+            Map<String, Object> errorMessage = new HashMap<>();               
+            errorMessage.put("msg", "Authorization Failed");
+
+            // JSON 형태로 메시지 생성
+            try {
+                new ObjectMapper().writeValue(response.getOutputStream(), errorMessage);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }    
+
+        // 자격 증명 실패시         
+        } catch(BadCredentialsException e) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+            // JSON으로 만들기 위해 Map으로 데이터 저장 
+            Map<String, Object> errorMessage = new HashMap<>();               
+            errorMessage.put("msg", "Authorization Failed");
+
+            // JSON 형태로 메시지 생성
+            try {
+                new ObjectMapper().writeValue(response.getOutputStream(), errorMessage);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }    
+
+        } catch(IOException e) {
             e.printStackTrace();
         }
 
@@ -93,8 +127,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // JSON으로 만들기 위해 Map으로 데이터 저장 
         Map<String, Object> errorMessage = new HashMap<>();               
-        // errorMessage.put("StatusCode", HttpStatus.UNAUTHORIZED.value());
-        errorMessage.put("msg", "login success");
+        errorMessage.put("msg", "Login Success");
 
         // JSON 형태로 메시지 생성
         new ObjectMapper().writeValue(response.getOutputStream(), errorMessage);
