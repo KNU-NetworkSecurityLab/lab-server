@@ -37,8 +37,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         // JWT는 헤더에 ID와 PW에 해당하는 정보를 포함한 토큰을 담음
         .httpBasic().disable()
         // AuthenticationManager을 던져야 함
+        // 인증 후에 인가된 사용자의 권한을 확인하고 인증을 완료하는 방식
         .addFilter(new JwtAuthenticationFilter(authenticationManager()))
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+        // // JwtAuthenticationFilter 앞에 위치시키는 필터
+        // // 인증 실패시 예외를 던지는 필터
+        // .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class)
         .authorizeRequests()
         // user api에는 user, admin 접근가능
         .antMatchers("/api/v1/user/**")

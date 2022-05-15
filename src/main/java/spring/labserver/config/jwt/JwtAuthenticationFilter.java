@@ -2,6 +2,8 @@ package spring.labserver.config.jwt;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -12,6 +14,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import lombok.RequiredArgsConstructor;
 import spring.labserver.config.details.PrincipalDetails;
 import spring.labserver.domain.user.User;
+
+// 인증
 
 // 스프링 시큐리티에서 UsernamePasswordAuthenticationFilter가 있음
 // /login 요청해서 name, password 정송하면 (POST) 해당 필터가 동작 함
@@ -72,7 +78,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // Hash 암호 방식
         String jwtToken = JWT.create()
             .withSubject("nsl토큰")
-            // 만료시간 30분
+            // 만료시간
             .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
             // 비공개 클래임으로 키-밸류 값 
             .withClaim("id", principalDetails.getUser().getId())
@@ -80,5 +86,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .sign(Algorithm.HMAC512(JwtProperties.SECRET));
 
         response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+
+        // 성공 메시지 작성
+        response.setStatus(HttpStatus.ACCEPTED.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        // JSON으로 만들기 위해 Map으로 데이터 저장 
+        Map<String, Object> errorMessage = new HashMap<>();               
+        // errorMessage.put("StatusCode", HttpStatus.UNAUTHORIZED.value());
+        errorMessage.put("msg", "login success");
+
+        // JSON 형태로 메시지 생성
+        new ObjectMapper().writeValue(response.getOutputStream(), errorMessage);
+
     }
+
 }
