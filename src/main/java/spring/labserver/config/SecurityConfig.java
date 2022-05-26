@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import spring.labserver.config.jwt.JwtAuthenticationFilter;
 import spring.labserver.config.jwt.JwtAuthorizationFilter;
 import spring.labserver.domain.user.UserRepository;
+import spring.labserver.services.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -19,7 +20,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     private CorsConfig corsConfig;
 
     @Autowired
-    private UserRepository userRepository;
+    // private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -39,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         // AuthenticationManager을 던져야 함
         // 인증 후에 인가된 사용자의 권한을 확인하고 인증을 완료하는 방식
         .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-        .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+        .addFilter(new JwtAuthorizationFilter(authenticationManager(), userService))
         // // JwtAuthenticationFilter 앞에 위치시키는 필터
         // // 인증 실패시 예외를 던지는 필터
         // .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class)

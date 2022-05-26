@@ -28,7 +28,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import spring.labserver.config.details.PrincipalDetails;
 import spring.labserver.domain.user.User;
-import spring.labserver.domain.user.UserRepository;
+import spring.labserver.services.UserService;
 
 // 인가
 
@@ -37,11 +37,13 @@ import spring.labserver.domain.user.UserRepository;
 // 만약 권한이나 인증이 필요한 주소가 아니라면 이 필터를 거치지 않음
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private UserRepository userRepository;
+    // private UserRepository userRepository;
+    private UserService userService;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserService userService) {
         super(authenticationManager);
-        this.userRepository = userRepository;
+        // this.userRepository = userRepository;
+        this.userService = userService;
     }
     
     // 인증이나 권한이 필요한 주소요청이 있을 때 해당 필터를 타게 됨
@@ -65,7 +67,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
                 // 서명이 정상적으로 됨
                 if(userId != null) {
-                    User userEntity = userRepository.findByUserId(userId);
+                    User userEntity = userService.findByUserId(userId);
                     PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
 
                     // JWT 토큰 서명을 통해서 서명이 정상인걸 확인하면, Authentication 객체를 만들어 줌

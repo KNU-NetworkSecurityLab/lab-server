@@ -50,15 +50,12 @@ public class User {
     @Column(nullable = false)
     private String role;
     
-    // 역할 반환
-    // ENUM으로 안하고 ,로 구분해서 ROLE을 입력한뒤 그걸 파싱
-    public List<String> getRoleList() {
-        if(this.role.length() > 0) {
-            return Arrays.asList(this.role.split(","));
-        }
-        return new ArrayList<>();
+    public void update(String password, String phone, String mail) {
+        this.password = password;
+        this.phone = phone;
+        this.mail = mail;
     }
-
+    
     @Builder
     public User(String userId, String name, String password, String mail, String phone, String role) {
         this.userId = userId;
@@ -67,6 +64,15 @@ public class User {
         this.mail = mail;
         this.phone = phone;
         this.role = role;
+    }
+
+    // 역할 반환
+    // ENUM으로 안하고 ,로 구분해서 ROLE을 입력한뒤 그걸 파싱
+    public List<String> getRoleList() {
+        if(this.role.length() > 0) {
+            return Arrays.asList(this.role.split(","));
+        }
+        return new ArrayList<>();
     }
 
 }
