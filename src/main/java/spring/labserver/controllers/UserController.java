@@ -22,16 +22,14 @@ import spring.labserver.services.UserService;
 @RequiredArgsConstructor
 public class UserController {
     
-    // private final UserRepository userRepository;
     private final UserService userService;
 
     // USER, ADMIN 접근 가능
     @GetMapping("/user")
     public List<UserInfoInterface> user() {
-        return userService.findAllUserInfoByRole();
-        
+        return userService.findAllUserInfoByRole();        
     }
-    
+
     // 회원 가입
     @PostMapping("/signup")
     public UserMsgResponseDto signup(@RequestBody User user) {
@@ -48,7 +46,7 @@ public class UserController {
     @GetMapping("/user/dto")
     public UserResponseDto userDto(@RequestParam("userId") String userId, @RequestParam("name") String name, @RequestParam("password") String password,
         @RequestParam("phone") String phone, @RequestParam("mail") String mail, @RequestParam String role) {
-            return new UserResponseDto(userId, name, password, phone, mail, role);
+        return new UserResponseDto(userId, name, password, phone, mail, role);
     }
     
     // ADMIN 접근 가능

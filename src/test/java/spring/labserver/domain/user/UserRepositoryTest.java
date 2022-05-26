@@ -16,7 +16,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import spring.labserver.domain.user.query.UserInfoInterface;
 import spring.labserver.dto.UserUpdateRequestDto;
-import spring.labserver.services.UserService;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest

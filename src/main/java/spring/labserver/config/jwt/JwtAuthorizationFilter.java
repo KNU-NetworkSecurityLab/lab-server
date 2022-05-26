@@ -37,12 +37,10 @@ import spring.labserver.services.UserService;
 // 만약 권한이나 인증이 필요한 주소가 아니라면 이 필터를 거치지 않음
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    // private UserRepository userRepository;
     private UserService userService;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserService userService) {
         super(authenticationManager);
-        // this.userRepository = userRepository;
         this.userService = userService;
     }
     

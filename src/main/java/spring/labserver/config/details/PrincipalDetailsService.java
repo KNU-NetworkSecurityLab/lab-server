@@ -14,7 +14,6 @@ import spring.labserver.services.UserService;
 @RequiredArgsConstructor
 public class PrincipalDetailsService implements UserDetailsService{
     
-    // private final UserRepository userRepository;
     private final UserService userService;
 
     @Override

@@ -9,7 +9,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 
 import spring.labserver.config.jwt.JwtAuthenticationFilter;
 import spring.labserver.config.jwt.JwtAuthorizationFilter;
-import spring.labserver.domain.user.UserRepository;
 import spring.labserver.services.UserService;
 
 @Configuration
@@ -20,7 +19,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     private CorsConfig corsConfig;
 
     @Autowired
-    // private UserRepository userRepository;
     private UserService userService;
 
     @Override
