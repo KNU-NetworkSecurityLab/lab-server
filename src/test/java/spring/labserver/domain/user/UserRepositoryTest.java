@@ -14,7 +14,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import spring.labserver.domain.user.query.UserInfoInterface;
+import spring.labserver.domain.user.query.UsersInfoInterface;
 import spring.labserver.dto.UserUpdateRequestDto;
 
 @ExtendWith(SpringExtension.class)
@@ -83,11 +83,11 @@ public class UserRepositoryTest {
     @WithMockUser(roles = "USER")
     public void 유저리스트_불러오기() {
         // when
-        List<UserInfoInterface> userInfoList = userRepository.findAllUserInfoByRole();
+        List<UsersInfoInterface> userInfoList = userRepository.findAllUserInfoByRole();
         
         int i = 0;
         // then
-        for(UserInfoInterface tmp : userInfoList) {
+        for(UsersInfoInterface tmp : userInfoList) {
             if(i == 0) {
                 assertThat(tmp.getUserId()).isEqualTo(userId1);
                 assertThat(tmp.getName()).isEqualTo(name1);
@@ -114,6 +114,7 @@ public class UserRepositoryTest {
         String ChangedPassword = "ChangedPassword";
         String ChangedMail = "ChangedMail";
         String ChangedPhone = "ChangedPhone";
+        String ChangedName = "ChangedName";
 
         // DTO 테스트
         UserUpdateRequestDto requestDto = UserUpdateRequestDto.builder()
@@ -121,6 +122,7 @@ public class UserRepositoryTest {
             .password(ChangedPassword)
             .mail(ChangedMail)
             .phone(ChangedPhone)
+            .name(ChangedName)
             .build();
                 
         // 갱신 테스트

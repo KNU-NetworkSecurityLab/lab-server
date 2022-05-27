@@ -1,6 +1,6 @@
 package spring.labserver.domain.user.query;
 
-public interface UserInfoInterface {
+public interface UsersInfoInterface {
     String getUserId();
     String getName();
     String getPhone();
