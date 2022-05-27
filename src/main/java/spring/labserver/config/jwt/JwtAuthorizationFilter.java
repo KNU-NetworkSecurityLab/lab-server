@@ -55,7 +55,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 chain.doFilter(request, response);
                 return;
             }
-            System.out.println("header = " + jwtHeader);
+            // System.out.println("header = " + jwtHeader);
             
             try {
 
@@ -81,7 +81,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     .withClaim("id", principalDetails.getUser().getId())
                     .withClaim("userId", principalDetails.getUser().getUserId())
                     .sign(Algorithm.HMAC512(JwtProperties.SECRET));
-
                     response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + refreshToken);
 
                     // 강제로 시큐리티 세션이 접근하여 Authentication 객체를 저장

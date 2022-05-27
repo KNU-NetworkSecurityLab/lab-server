@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import spring.labserver.error.exception.UserAlreadyExistException;
 import spring.labserver.error.exception.UserNotExistException;
+import spring.labserver.error.exception.UserNotMatchException;
 import spring.labserver.error.exception.UserNullException;
 
 // Controller 에서 발생하는 error를 처리하는 클래스
@@ -57,6 +58,23 @@ public class ApiExceptionHandler {
 
         ApiException apiException = new ApiException(
             "Null included in data",
+            httpStatus,
+            ZonedDateTime.now(ZoneId.of("Z"))
+        );
+
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+    //RuntimeException
+    // 403
+    // 요청한 userId와 현재 로그인한 userId가 다를 때
+    @ExceptionHandler(value = {UserNotMatchException.class})
+    public ResponseEntity<Object> handlerUserNotMatchException(UserNotMatchException e) {
+        
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
+
+        ApiException apiException = new ApiException(
+            "Your userID is not matched",
             httpStatus,
             ZonedDateTime.now(ZoneId.of("Z"))
         );

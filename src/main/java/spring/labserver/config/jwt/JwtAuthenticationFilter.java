@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
 
-        System.out.println("JwtAuthenticationFilter : 로그인 시도중");
+        // System.out.println("JwtAuthenticationFilter : 로그인 시도중");
 
         // 사용자의 id와 password 받기
         try {
@@ -106,7 +106,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
-        System.out.println("successfulAuthentication 실행됨 : 인증 완료");
+        // System.out.println("successfulAuthentication 실행됨 : 인증 완료");
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
         // Hash 암호 방식

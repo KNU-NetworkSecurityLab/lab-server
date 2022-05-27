@@ -7,18 +7,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import spring.labserver.config.jwt.JwtTokenProvider;
 import spring.labserver.domain.user.User;
 import spring.labserver.domain.user.UserRepository;
 import spring.labserver.dto.UserUpdateRequestDto;
 import spring.labserver.error.exception.UserAlreadyExistException;
 import spring.labserver.error.exception.UserNotExistException;
+import spring.labserver.error.exception.UserNotMatchException;
 import spring.labserver.error.exception.UserNullException;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    private final UserRepository userRepository;
+    private final UserRepository userRepository;    
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private JwtTokenProvider jwtTokenProvider;
 
     // 해당 사용자의 모든 정보 조회 - JWT PrincipalDetailsService에 사용
     @Transactional
@@ -55,11 +58,18 @@ public class UserService {
 
     // 회원 정보 갱신
     @Transactional
-    public ResponseEntity<String> update(UserUpdateRequestDto requestDto) {
-        // requestDto 중에 NULL이 있다면        
+    public ResponseEntity<String> update(String token, UserUpdateRequestDto requestDto) {
+        // requestDto 중에 NULL이면        
         if(requestDto.getMail() == null | requestDto.getPassword() == null | requestDto.getPhone() == null | requestDto.getName() == null
         | requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0) {            
             throw new UserNullException();
+        }
+
+        // 요청한 userId와 현재 로그인한 userId가 다르다면
+        jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
+        String userIdCk = jwtTokenProvider.getUserIdFromJWT();
+        if(!userIdCk.equals(requestDto.getUserId())) {
+            throw new UserNotMatchException();
         }
 
         // 해당 아이디가 있는지 확인 후 update
@@ -75,12 +85,20 @@ public class UserService {
 
     // 자신의 회원 정보 조회
     @Transactional
-    public ResponseEntity<Object> findUserInfoById(String userId) {
+    public ResponseEntity<Object> findUserInfoById(String token, String userId) {
+        // userId가 NULL이면
         if(userId == null | userId.length() == 0) {
             throw new UserNullException();
         }
+
+        // 요청한 userId와 현재 로그인한 userId가 다르다면
+        jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
+        String userIdCk = jwtTokenProvider.getUserIdFromJWT();
+        if(!userIdCk.equals(userId)) {
+            throw new UserNotMatchException();
+        }
         
-         // 해당 아이디가 있는지 확인
+        // 해당 아이디가 있다면
          if(userRepository.existsByUserId(userId)) {
             return ResponseEntity.ok().body(userRepository.findUserInfoById(userId));
         // 해당 아이디가 없다면
@@ -92,7 +110,10 @@ public class UserService {
     
     // 여러 사용자들의 회원 정보 조회
     @Transactional
-    public ResponseEntity<Object> findAllUserInfoByRole() {       
+    public ResponseEntity<Object> findAllUserInfoByRole() {   
+        if(userRepository.findAllUserInfoByRole() == null) {
+            throw new UserNullException();
+        }     
         return ResponseEntity.ok().body(userRepository.findAllUserInfoByRole());
     }    
 

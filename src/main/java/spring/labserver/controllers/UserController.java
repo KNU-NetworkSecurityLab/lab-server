@@ -1,9 +1,11 @@
 package spring.labserver.controllers;
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,14 +38,14 @@ public class UserController {
 
     // 자신의 회원 정보 조회
     @PostMapping("/user/info")
-    public ResponseEntity<Object> userInfo(@RequestBody UserInfoRequestDto userInfoRequestDto) {
-        return userService.findUserInfoById(userInfoRequestDto.getUserId());
+    public ResponseEntity<Object> userInfo(@RequestHeader("Authorization") String token, @RequestBody UserInfoRequestDto userInfoRequestDto) {
+        return userService.findUserInfoById(token, userInfoRequestDto.getUserId());
     }
 
     // 회원 정보 갱신
     @GetMapping("/user/update")
-    public ResponseEntity<String> userUpdate(@RequestBody UserUpdateRequestDto requestDto) {        
-        return userService.update(requestDto);
+    public ResponseEntity<String> userUpdate(@RequestHeader("Authorization") String token, @RequestBody UserUpdateRequestDto requestDto) {        
+        return userService.update(token, requestDto);
     }
 
     // @GetMapping("/user/dto")
