@@ -49,7 +49,7 @@ public class ApiExceptionHandler {
     }
 
     // 400
-    // userId가 이미 존재할 때
+    // 데이터에 Null이 포함되어 있을 때
     @ExceptionHandler(value = {UserNullException.class})
     public ResponseEntity<Object> handlerUserNullException(UserNullException e) {
         

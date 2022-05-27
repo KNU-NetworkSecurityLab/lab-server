@@ -23,7 +23,7 @@ public class UserService {
     // 해당 사용자의 모든 정보 조회 - JWT PrincipalDetailsService에 사용
     @Transactional
     public User findByUserId(String userId) {
-        if(userId.length() == 0) {
+        if(userId == null | userId.length() == 0) {
             throw new UserNullException();
         }
 
@@ -34,7 +34,8 @@ public class UserService {
     @Transactional
     public ResponseEntity<Object> save(User user) {
         // user 중에 NULL이 있다면        
-        if(user.getUserId().length() == 0 | user.getMail().length() == 0 | user.getPassword().length() == 0 | user.getPhone().length() == 0 | user.getName().length() == 0 | user.getRole().length() == 0) {            
+        if(user.getUserId() == null | user.getMail() == null | user.getPassword() == null | user.getPhone() == null | user.getName() == null
+         | user.getUserId().length() == 0 | user.getMail().length() == 0 | user.getPassword().length() == 0 | user.getPhone().length() == 0 | user.getName().length() == 0) {            
             throw new UserNullException();
         }
 
@@ -56,7 +57,8 @@ public class UserService {
     @Transactional
     public ResponseEntity<String> update(UserUpdateRequestDto requestDto) {
         // requestDto 중에 NULL이 있다면        
-        if(requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0) {            
+        if(requestDto.getMail() == null | requestDto.getPassword() == null | requestDto.getPhone() == null | requestDto.getName() == null
+        | requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0) {            
             throw new UserNullException();
         }
 
@@ -74,7 +76,7 @@ public class UserService {
     // 자신의 회원 정보 조회
     @Transactional
     public ResponseEntity<Object> findUserInfoById(String userId) {
-        if(userId.length() == 0) {
+        if(userId == null | userId.length() == 0) {
             throw new UserNullException();
         }
         
