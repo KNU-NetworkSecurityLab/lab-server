@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import spring.labserver.domain.user.User;
-import spring.labserver.dto.UserInfoRequestDto;
 import spring.labserver.dto.UserUpdateRequestDto;
 import spring.labserver.services.UserService;
 
@@ -21,6 +20,13 @@ import spring.labserver.services.UserService;
 public class UserController {
     
     private final UserService userService;
+    
+    // USER, ADMIN 접근 가능
+    // ROLE_USER 권한을 가진 사용자들의 정보 반환(Password 제외)
+    @GetMapping("/user")
+    public ResponseEntity<Object> user() {
+        return userService.findAllUserInfoByRole();        
+    }
 
     // ResponseEntity 사용해서 에러처리하기
     // 회원 가입
@@ -29,30 +35,23 @@ public class UserController {
         return userService.save(user);
     }
 
-    // USER, ADMIN 접근 가능
-    // ROLE_USER 권한을 가진 사용자들의 정보 반환(Password 제외)
-    @GetMapping("/user")
-    public ResponseEntity<Object> user() {
-        return userService.findAllUserInfoByRole();        
-    }
-
     // 자신의 회원 정보 조회
     @PostMapping("/user/info")
-    public ResponseEntity<Object> userInfo(@RequestHeader("Authorization") String token, @RequestBody UserInfoRequestDto userInfoRequestDto) {
-        return userService.findUserInfoById(token, userInfoRequestDto.getUserId());
+    public ResponseEntity<Object> userInfo(@RequestHeader("Authorization") String token) {
+        return userService.findUserInfoById(token);
     }
 
     // 회원 정보 갱신
-    @GetMapping("/user/update")
+    @PostMapping("/user/update")
     public ResponseEntity<String> userUpdate(@RequestHeader("Authorization") String token, @RequestBody UserUpdateRequestDto requestDto) {        
         return userService.update(token, requestDto);
     }
 
-    // @GetMapping("/user/dto")
-    // public UserResponseDto userDto(@RequestParam("userId") String userId, @RequestParam("name") String name, @RequestParam("password") String password,
-    //     @RequestParam("phone") String phone, @RequestParam("mail") String mail, @RequestParam String role) {
-    //     return new UserResponseDto(userId, name, password, phone, mail, role);
-    // }
+    // 회원 탈퇴
+    @PostMapping("/user/delete")
+    public ResponseEntity<String> userDelete(@RequestHeader("Authorization") String token) {        
+        return userService.delete(token);
+    }    
     
     // ADMIN 접근 가능
     @GetMapping("/admin")

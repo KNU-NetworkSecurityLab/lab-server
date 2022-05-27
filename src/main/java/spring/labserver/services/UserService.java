@@ -13,7 +13,6 @@ import spring.labserver.domain.user.UserRepository;
 import spring.labserver.dto.UserUpdateRequestDto;
 import spring.labserver.error.exception.UserAlreadyExistException;
 import spring.labserver.error.exception.UserNotExistException;
-import spring.labserver.error.exception.UserNotMatchException;
 import spring.labserver.error.exception.UserNullException;
 
 @RequiredArgsConstructor
@@ -56,46 +55,16 @@ public class UserService {
         }
     }
 
-    // 회원 정보 갱신
-    @Transactional
-    public ResponseEntity<String> update(String token, UserUpdateRequestDto requestDto) {
-        // requestDto 중에 NULL이면        
-        if(requestDto.getMail() == null | requestDto.getPassword() == null | requestDto.getPhone() == null | requestDto.getName() == null
-        | requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0) {            
-            throw new UserNullException();
-        }
-
-        // 요청한 userId와 현재 로그인한 userId가 다르다면
-        jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
-        String userIdCk = jwtTokenProvider.getUserIdFromJWT();
-        if(!userIdCk.equals(requestDto.getUserId())) {
-            throw new UserNotMatchException();
-        }
-
-        // 해당 아이디가 있는지 확인 후 update
-        if(userRepository.existsByUserId(requestDto.getUserId())) {
-            User user = userRepository.findByUserId(requestDto.getUserId());
-            user.update(bCryptPasswordEncoder.encode(requestDto.getPassword()), requestDto.getPhone(), requestDto.getMail());
-            return ResponseEntity.ok("Update Success");
-        // 해당 아이디가 없다면
-        } else {
-            throw new UserNotExistException();
-        }
-    }
-
     // 자신의 회원 정보 조회
     @Transactional
-    public ResponseEntity<Object> findUserInfoById(String token, String userId) {
+    public ResponseEntity<Object> findUserInfoById(String token) {
+        // 요청한 userId와 현재 로그인한 userId가 다르다면
+        jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
+        String userId = jwtTokenProvider.getUserIdFromJWT();
+
         // userId가 NULL이면
         if(userId == null | userId.length() == 0) {
             throw new UserNullException();
-        }
-
-        // 요청한 userId와 현재 로그인한 userId가 다르다면
-        jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
-        String userIdCk = jwtTokenProvider.getUserIdFromJWT();
-        if(!userIdCk.equals(userId)) {
-            throw new UserNotMatchException();
         }
         
         // 해당 아이디가 있다면
@@ -107,6 +76,52 @@ public class UserService {
         }
              
     }
+
+    // 회원 정보 갱신
+    @Transactional
+    public ResponseEntity<String> update(String token, UserUpdateRequestDto requestDto) {
+        // 요청한 userId와 현재 로그인한 userId가 다르다면
+        jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
+        String userId = jwtTokenProvider.getUserIdFromJWT();
+
+        // requestDto 중에 NULL이면        
+        if(userId == null | requestDto.getMail() == null | requestDto.getPassword() == null | requestDto.getPhone() == null | requestDto.getName() == null
+        | userId.length() == 0 | requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0) {            
+            throw new UserNullException();
+        }
+
+        // 해당 아이디가 있는지 확인 후 update
+        if(userRepository.existsByUserId(userId)) {
+            User user = userRepository.findByUserId(userId);
+            user.update(bCryptPasswordEncoder.encode(requestDto.getPassword()), requestDto.getPhone(), requestDto.getMail());
+            return ResponseEntity.ok("Update Success");
+        // 해당 아이디가 없다면
+        } else {
+            throw new UserNotExistException();
+        }
+    }
+
+    // 회원 탈퇴
+    @Transactional
+    public ResponseEntity<String> delete(String token) {
+        // 요청한 userId와 현재 로그인한 userId가 다르다면
+        jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
+        String userId = jwtTokenProvider.getUserIdFromJWT();
+
+        // userId가 NULL이면
+        if(userId == null | userId.length() == 0) {
+            throw new UserNullException();
+        }
+        
+        // 해당 아이디가 있는지 확인 후 delete
+        if(userRepository.existsByUserId(userId)) {
+            userRepository.deleteByUserId(userId);
+            return ResponseEntity.ok("Delete Success");
+        // 해당 아이디가 없다면
+        } else {
+            throw new UserNotExistException();
+        }
+    }    
     
     // 여러 사용자들의 회원 정보 조회
     @Transactional
