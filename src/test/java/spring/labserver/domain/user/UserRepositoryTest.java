@@ -118,7 +118,6 @@ public class UserRepositoryTest {
 
         // DTO 테스트
         UserUpdateRequestDto requestDto = UserUpdateRequestDto.builder()
-            .userId(user.getUserId())
             .password(ChangedPassword)
             .mail(ChangedMail)
             .phone(ChangedPhone)
