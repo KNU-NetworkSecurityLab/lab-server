@@ -2,8 +2,10 @@ package spring.labserver.controllers;
 
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import spring.labserver.domain.user.User;
+import spring.labserver.dto.UserRoleUpdateRequestDto;
 import spring.labserver.dto.UserUpdateRequestDto;
 import spring.labserver.services.UserService;
 
@@ -42,21 +45,22 @@ public class UserController {
     }
 
     // 회원 정보 갱신
-    @PostMapping("/user/update")
+    @PutMapping("/user/update")
     public ResponseEntity<String> userUpdate(@RequestHeader("Authorization") String token, @RequestBody UserUpdateRequestDto requestDto) {        
         return userService.update(token, requestDto);
     }
 
     // 회원 탈퇴
-    @PostMapping("/user/delete")
+    @DeleteMapping("/user/delete")
     public ResponseEntity<String> userDelete(@RequestHeader("Authorization") String token) {        
         return userService.delete(token);
     }    
     
-    // ADMIN 접근 가능
-    @GetMapping("/admin")
-    public String admin() {
-        return "admin";
+    // ADMIN만 접근 가능
+    // 사용자 권한 수정
+    @PutMapping("/admin/authority")
+    public ResponseEntity<String> adminRole(@RequestHeader("Authorization") String token, UserRoleUpdateRequestDto requestDto) {
+        return userService.setRole(token, requestDto);
     }
 
 }

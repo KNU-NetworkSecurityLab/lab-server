@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import spring.labserver.error.exception.UserAlreadyExistException;
+import spring.labserver.error.exception.UserNotAdminException;
 import spring.labserver.error.exception.UserNotExistException;
 import spring.labserver.error.exception.UserNotMatchException;
 import spring.labserver.error.exception.UserNullException;
@@ -75,6 +76,22 @@ public class ApiExceptionHandler {
 
         ApiException apiException = new ApiException(
             "Your userID is not matched",
+            httpStatus,
+            ZonedDateTime.now(ZoneId.of("Z"))
+        );
+
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+    // 403
+    // Admin으로 들어온 요청에 지정한 Admin 계정이 아닐 때
+    @ExceptionHandler(value = {UserNotAdminException.class})
+    public ResponseEntity<Object> handlerUserNotAdminException(UserNotAdminException e) {
+        
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
+
+        ApiException apiException = new ApiException(
+            "You are not Admin",
             httpStatus,
             ZonedDateTime.now(ZoneId.of("Z"))
         );
