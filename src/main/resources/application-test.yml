@@ -1,0 +1,12 @@
+# MySQL 테스트 데이터베이스 세팅(AWS EC2)
+spring:
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://ec2-3-34-34-215.ap-northeast-2.compute.amazonaws.com:12312/nsl_test?serverTimezone=UTC&characterEncoding=UTF-8
+        username: test
+        password: 1q2w3e4r!!
+
+logging:
+    level:
+        root: DEBUG
+        
