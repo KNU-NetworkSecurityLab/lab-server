@@ -5,4 +5,6 @@ public interface UsersInfoInterface {
     String getName();
     String getPhone();
     String getMail();
+    String getPosition();
+    String getStudentId();
 }

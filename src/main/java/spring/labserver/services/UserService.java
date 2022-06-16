@@ -48,8 +48,8 @@ public class UserService {
     @Transactional
     public ResponseEntity<Object> save(User user) {
         // user 중에 NULL이 있다면        
-        if(user.getUserId() == null | user.getMail() == null | user.getPassword() == null | user.getPhone() == null | user.getName() == null
-         | user.getUserId().length() == 0 | user.getMail().length() == 0 | user.getPassword().length() == 0 | user.getPhone().length() == 0 | user.getName().length() == 0) {            
+        if(user.getUserId() == null | user.getMail() == null | user.getPassword() == null | user.getPhone() == null | user.getName() == null | user.getPosition() == null | user.getStudentId() == null
+         | user.getUserId().length() == 0 | user.getMail().length() == 0 | user.getPassword().length() == 0 | user.getPhone().length() == 0 | user.getName().length() == 0 | user.getPosition().length() == 0 | user.getStudentId().length() == 0) {            
             throw new UserNullException();
         }
 
@@ -97,15 +97,15 @@ public class UserService {
         String userId = jwtTokenProvider.getUserIdFromJWT();
 
         // requestDto 중에 NULL이면        
-        if(userId == null | requestDto.getMail() == null | requestDto.getPassword() == null | requestDto.getPhone() == null | requestDto.getName() == null
-        | userId.length() == 0 | requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0) {            
+        if(userId == null | requestDto.getMail() == null | requestDto.getPassword() == null | requestDto.getPhone() == null | requestDto.getName() == null | requestDto.getPosition() == null | requestDto.getStudentId() == null
+        | userId.length() == 0 | requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0 | requestDto.getPosition().length() == 0 | requestDto.getStudentId().length() == 0) {            
             throw new UserNullException();
         }
 
         // 해당 아이디가 있는지 확인 후 update
         if(userRepository.existsByUserId(userId)) {
             User user = userRepository.findByUserId(userId);
-            user.update(bCryptPasswordEncoder.encode(requestDto.getPassword()), requestDto.getPhone(), requestDto.getMail());
+            user.update(bCryptPasswordEncoder.encode(requestDto.getPassword()), requestDto.getPhone(), requestDto.getMail(), requestDto.getPosition(), requestDto.getStudentId());
             return ResponseEntity.ok("Update Success");
         // 해당 아이디가 없다면
         } else {

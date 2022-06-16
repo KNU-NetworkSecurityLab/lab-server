@@ -33,6 +33,8 @@ public class UserRepositoryTest {
     private String mail1 = "testMail@naver.com";
     private String phone1 = "010-1111-1111";
     private String role1 = "ROLE_USER";
+    private String position1 = "랩장";
+    private String studentId1 = "16";
 
     private String userId2 = "testId2";
     private String name2 = "testName2";
@@ -40,6 +42,8 @@ public class UserRepositoryTest {
     private String mail2 = "testMail@naver.com";
     private String phone2 = "010-1111-1111";
     private String role2 = "ROLE_USER";
+    private String position2 = "부원";
+    private String studentId2 = "19";
 
     @BeforeEach
     void before() {
@@ -50,6 +54,8 @@ public class UserRepositoryTest {
             .mail(mail1)
             .phone(phone1)
             .role(role1)
+            .position(position1)
+            .studentId(studentId1)
             .build());
 
         userRepository.save(User.builder()
@@ -59,6 +65,8 @@ public class UserRepositoryTest {
             .mail(mail2)
             .phone(phone2)
             .role(role2)
+            .position(position2)
+            .studentId(studentId2)
             .build());
     }
 
@@ -77,6 +85,8 @@ public class UserRepositoryTest {
         assertThat(user.getMail()).isEqualTo(mail2);
         assertThat(user.getPhone()).isEqualTo(phone1);
         assertThat(user.getRole()).isEqualTo(role1);
+        assertThat(user.getPosition()).isEqualTo(position1);    
+        assertThat(user.getStudentId()).isEqualTo(studentId1);   
     }
 
     @Test
@@ -93,11 +103,16 @@ public class UserRepositoryTest {
                 assertThat(tmp.getName()).isEqualTo(name1);
                 assertThat(tmp.getMail()).isEqualTo(mail1);
                 assertThat(tmp.getPhone()).isEqualTo(phone1);    
+                assertThat(tmp.getPosition()).isEqualTo(position1);    
+                assertThat(tmp.getStudentId()).isEqualTo(studentId1);    
+
             } else {
                 assertThat(tmp.getUserId()).isEqualTo(userId2);
                 assertThat(tmp.getName()).isEqualTo(name2);
                 assertThat(tmp.getMail()).isEqualTo(mail2);
                 assertThat(tmp.getPhone()).isEqualTo(phone2);    
+                assertThat(tmp.getPosition()).isEqualTo(position2);    
+                assertThat(tmp.getStudentId()).isEqualTo(studentId2);    
             }
             i++;
         }
@@ -115,6 +130,8 @@ public class UserRepositoryTest {
         String ChangedMail = "ChangedMail";
         String ChangedPhone = "ChangedPhone";
         String ChangedName = "ChangedName";
+        String ChangedPosition = "ChangedPosition";
+        String ChangedStudentId = "22";
 
         // DTO 테스트
         UserUpdateRequestDto requestDto = UserUpdateRequestDto.builder()
@@ -122,13 +139,17 @@ public class UserRepositoryTest {
             .mail(ChangedMail)
             .phone(ChangedPhone)
             .name(ChangedName)
+            .position(ChangedPosition)
+            .studentId(ChangedStudentId)
             .build();
                 
         // 갱신 테스트
-        user.update(requestDto.getPassword(), requestDto.getPhone(), requestDto.getMail());
+        user.update(requestDto.getPassword(), requestDto.getPhone(), requestDto.getMail(), requestDto.getPosition(), requestDto.getStudentId());
         assertThat(user.getUserId()).isEqualTo(userId1);
         assertThat(user.getPassword()).isEqualTo(ChangedPassword);
         assertThat(user.getMail()).isEqualTo(ChangedMail);
         assertThat(user.getPhone()).isEqualTo(ChangedPhone);
+        assertThat(user.getPosition()).isEqualTo(ChangedPosition);
+        assertThat(user.getStudentId()).isEqualTo(ChangedStudentId);
     }
 }
