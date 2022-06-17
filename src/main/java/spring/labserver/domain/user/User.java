@@ -31,39 +31,56 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    
 
+    // 사용자 ID
     @Column(nullable = false, length = 20, unique = true)
     private String userId;
 
+    // 이름
     @Column(nullable = false)
     private String name;
 
+    // 비밀번호
     @Column(nullable = false)
     private String password;
 
+    // 메일 주소
     @Column(nullable = false)
     private String mail;
 
+    // 핸드폰 번호
     @Column(nullable = false)
     private String phone;
 
-    // USER,ADMIN,GUEST
+    // 사용자 권한 - USER,ADMIN,GUEST
     @Column(nullable = false)
     private String role;
+
+    // 연구실 직책 - 랩장, 부원
+    @Column(nullable = false)
+    private String position;
+
+    // 학번
+    @Column(nullable = false)
+    private String studentId;
     
-    public void update(String password, String phone, String mail) {
+    public void update(String password, String phone, String mail, String position, String studentId) {
         this.password = password;
         this.phone = phone;
         this.mail = mail;
+        this.position = position;
+        this.studentId = studentId;
     }
     
     @Builder
-    public User(String userId, String name, String password, String mail, String phone, String role) {
+    public User(String userId, String name, String password, String mail, String phone, String role, String position, String studentId) {
         this.userId = userId;
         this.name = name;
         this.password = password;
         this.mail = mail;
         this.phone = phone;
         this.role = role;
+        this.position = position;
+        this.studentId = studentId;
     }
 
     // 역할 반환
