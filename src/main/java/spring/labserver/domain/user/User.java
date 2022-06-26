@@ -63,7 +63,8 @@ public class User {
     @Column(nullable = false)
     private String studentId;
     
-    public void update(String password, String phone, String mail, String position, String studentId) {
+    public void update(String name, String password, String phone, String mail, String position, String studentId) {
+        this.name = name;
         this.password = password;
         this.phone = phone;
         this.mail = mail;

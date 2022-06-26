@@ -1,5 +1,8 @@
 package spring.labserver.services;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.transaction.Transactional;
 
 import org.springframework.http.ResponseEntity;
@@ -27,7 +30,10 @@ public class UserService {
     // 해당 사용자의 모든 정보 조회 - JWT PrincipalDetailsService에 사용
     @Transactional
     public User findByUserId(String userId) {
-        if(userId == null | userId.length() == 0) {
+        if(userId == null) {
+            throw new UserNullException();
+        }
+        if(userId.length() == 0) {
             throw new UserNullException();
         }
 
@@ -48,8 +54,10 @@ public class UserService {
     @Transactional
     public ResponseEntity<Object> save(User user) {
         // user 중에 NULL이 있다면        
-        if(user.getUserId() == null | user.getMail() == null | user.getPassword() == null | user.getPhone() == null | user.getName() == null | user.getPosition() == null | user.getStudentId() == null
-         | user.getUserId().length() == 0 | user.getMail().length() == 0 | user.getPassword().length() == 0 | user.getPhone().length() == 0 | user.getName().length() == 0 | user.getPosition().length() == 0 | user.getStudentId().length() == 0) {            
+        if(user.getUserId() == null | user.getMail() == null | user.getPassword() == null | user.getPhone() == null | user.getName() == null | user.getPosition() == null | user.getStudentId() == null) {            
+            throw new UserNullException();
+        }
+        if(user.getUserId().length() == 0 | user.getMail().length() == 0 | user.getPassword().length() == 0 | user.getPhone().length() == 0 | user.getName().length() == 0 | user.getPosition().length() == 0 | user.getStudentId().length() == 0) {
             throw new UserNullException();
         }
 
@@ -63,7 +71,10 @@ public class UserService {
         // 회원가입 성공
         } else {
             userRepository.save(user);
-            return ResponseEntity.ok("SignUp Success");
+
+            Map<String, String> result = new HashMap<>();
+            result.put("msg", "SignUp Success");
+            return ResponseEntity.ok().body(result);
         }
     }
 
@@ -75,7 +86,10 @@ public class UserService {
         String userId = jwtTokenProvider.getUserIdFromJWT();
 
         // userId가 NULL이면
-        if(userId == null | userId.length() == 0) {
+        if(userId == null) {
+            throw new UserNullException();
+        }
+        if(userId.length() == 0) {
             throw new UserNullException();
         }
         
@@ -91,22 +105,27 @@ public class UserService {
 
     // 회원 정보 갱신
     @Transactional
-    public ResponseEntity<String> update(String token, UserUpdateRequestDto requestDto) {
+    public ResponseEntity<Object> update(String token, UserUpdateRequestDto requestDto) {
         // 요청한 userId와 현재 로그인한 userId가 다르다면
         jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
         String userId = jwtTokenProvider.getUserIdFromJWT();
 
         // requestDto 중에 NULL이면        
-        if(userId == null | requestDto.getMail() == null | requestDto.getPassword() == null | requestDto.getPhone() == null | requestDto.getName() == null | requestDto.getPosition() == null | requestDto.getStudentId() == null
-        | userId.length() == 0 | requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0 | requestDto.getPosition().length() == 0 | requestDto.getStudentId().length() == 0) {            
+        if(userId == null | requestDto.getMail() == null | requestDto.getPassword() == null | requestDto.getPhone() == null | requestDto.getName() == null | requestDto.getPosition() == null | requestDto.getStudentId() == null) {            
+            throw new UserNullException();
+        }
+        if(userId.length() == 0 | requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0 | requestDto.getPosition().length() == 0 | requestDto.getStudentId().length() == 0) {
             throw new UserNullException();
         }
 
         // 해당 아이디가 있는지 확인 후 update
         if(userRepository.existsByUserId(userId)) {
             User user = userRepository.findByUserId(userId);
-            user.update(bCryptPasswordEncoder.encode(requestDto.getPassword()), requestDto.getPhone(), requestDto.getMail(), requestDto.getPosition(), requestDto.getStudentId());
-            return ResponseEntity.ok("Update Success");
+            user.update(requestDto.getName(), bCryptPasswordEncoder.encode(requestDto.getPassword()), requestDto.getPhone(), requestDto.getMail(), requestDto.getPosition(), requestDto.getStudentId());
+
+            Map<String, String> result = new HashMap<>();
+            result.put("msg", "Update Success");
+            return ResponseEntity.ok().body(result);
         // 해당 아이디가 없다면
         } else {
             throw new UserNotExistException();
@@ -115,20 +134,26 @@ public class UserService {
 
     // 회원 탈퇴
     @Transactional
-    public ResponseEntity<String> delete(String token) {
+    public ResponseEntity<Object> delete(String token) {
         // 요청한 userId와 현재 로그인한 userId가 다르다면
         jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
         String userId = jwtTokenProvider.getUserIdFromJWT();
 
         // userId가 NULL이면
-        if(userId == null | userId.length() == 0) {
+        if(userId == null) {
+            throw new UserNullException();
+        }
+        if(userId.length() == 0) {
             throw new UserNullException();
         }
         
         // 해당 아이디가 있는지 확인 후 delete
         if(userRepository.existsByUserId(userId)) {
             userRepository.deleteByUserId(userId);
-            return ResponseEntity.ok("Delete Success");
+
+            Map<String, String> result = new HashMap<>();
+            result.put("msg", "Delete Success");
+            return ResponseEntity.ok().body(result);
         // 해당 아이디가 없다면
         } else {
             throw new UserNotExistException();
@@ -138,13 +163,15 @@ public class UserService {
     // ADMIN
     // ADMIN이 회원들의 직위 변경
     @Transactional
-    public ResponseEntity<String> setRole(String token, UserRoleUpdateRequestDto requestDto) {   
-        // 요청한 userId와 현재 로그인한 userId가 Admin 인지 확인
+    public ResponseEntity<Object> setRole(String token, UserRoleUpdateRequestDto requestDto) {   
+        // 현재 로그인한 userId가 Admin 인지 확인
         jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
         String userId = jwtTokenProvider.getUserIdFromJWT();
         // userId가 NULL이거나 받은 데이터 중 NULL이 있을 때
-        if(userId == null | requestDto.getUserId() == null | requestDto.getRole() == null 
-        | userId.length() == 0 | requestDto.getUserId().length() == 0 | requestDto.getRole().length() == 0) {
+        if(userId == null | requestDto.getUserId() == null | requestDto.getRole() == null) {
+            throw new UserNullException();
+        }
+        if(userId.length() == 0 | requestDto.getUserId().length() == 0 | requestDto.getRole().length() == 0) {
             throw new UserNullException();
         }
 
@@ -153,7 +180,7 @@ public class UserService {
             User admin = userRepository.findByUserId(userId);
 
             // ADMIN이 아니면
-            if(!userId.equals("admin") | admin.getRole() != "ROLE_ADMIN") {
+            if(!userId.equals("admin") | !admin.getRole().equals("ROLE_ADMIN")) {
                 throw new UserNotAdminException();
             }
 

@@ -144,7 +144,7 @@ public class UserRepositoryTest {
             .build();
                 
         // 갱신 테스트
-        user.update(requestDto.getPassword(), requestDto.getPhone(), requestDto.getMail(), requestDto.getPosition(), requestDto.getStudentId());
+        user.update(requestDto.getName(), requestDto.getPassword(), requestDto.getPhone(), requestDto.getMail(), requestDto.getPosition(), requestDto.getStudentId());
         assertThat(user.getUserId()).isEqualTo(userId1);
         assertThat(user.getPassword()).isEqualTo(ChangedPassword);
         assertThat(user.getMail()).isEqualTo(ChangedMail);

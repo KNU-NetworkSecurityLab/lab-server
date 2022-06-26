@@ -46,20 +46,20 @@ public class UserController {
 
     // 회원 정보 갱신
     @PutMapping("/user/update")
-    public ResponseEntity<String> userUpdate(@RequestHeader("Authorization") String token, @RequestBody UserUpdateRequestDto requestDto) {        
+    public ResponseEntity<Object> userUpdate(@RequestHeader("Authorization") String token, @RequestBody UserUpdateRequestDto requestDto) {        
         return userService.update(token, requestDto);
     }
 
     // 회원 탈퇴
     @DeleteMapping("/user/delete")
-    public ResponseEntity<String> userDelete(@RequestHeader("Authorization") String token) {        
+    public ResponseEntity<Object> userDelete(@RequestHeader("Authorization") String token) {        
         return userService.delete(token);
     }    
     
     // ADMIN만 접근 가능
     // 사용자 권한 수정
     @PutMapping("/admin/authority")
-    public ResponseEntity<String> adminRole(@RequestHeader("Authorization") String token, UserRoleUpdateRequestDto requestDto) {
+    public ResponseEntity<Object> adminRole(@RequestHeader("Authorization") String token, @RequestBody UserRoleUpdateRequestDto requestDto) {
         return userService.setRole(token, requestDto);
     }
 
