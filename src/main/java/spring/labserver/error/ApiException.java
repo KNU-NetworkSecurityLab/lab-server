@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class ApiException {
-    private final String message;
+    private final String msg;
     private final HttpStatus HttpStatus;
     private final ZonedDateTime timestamp;
 
