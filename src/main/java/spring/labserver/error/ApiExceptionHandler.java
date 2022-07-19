@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import spring.labserver.error.exception.RequestDeniedException;
 import spring.labserver.error.exception.UserAlreadyExistException;
 import spring.labserver.error.exception.UserNotAdminException;
 import spring.labserver.error.exception.UserNotExistException;
-import spring.labserver.error.exception.UserNotMatchException;
 import spring.labserver.error.exception.UserNullException;
 
 // Controller 에서 발생하는 error를 처리하는 클래스
@@ -66,16 +66,16 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
-    //RuntimeException
     // 403
-    // 요청한 userId와 현재 로그인한 userId가 다를 때
-    @ExceptionHandler(value = {UserNotMatchException.class})
-    public ResponseEntity<Object> handlerUserNotMatchException(UserNotMatchException e) {
+    // 허가된 요청이 아닐 때
+    // 요청한 userId와 현재 로그인한 userId가 다를 때 등
+    @ExceptionHandler(value = {UserNotAdminException.class})
+    public ResponseEntity<Object> handlerRequestDeniedException(RequestDeniedException e) {
         
         HttpStatus httpStatus = HttpStatus.FORBIDDEN;
 
         ApiException apiException = new ApiException(
-            "Your userID is not matched",
+            "Not allowed request",
             httpStatus,
             ZonedDateTime.now(ZoneId.of("Z"))
         );
