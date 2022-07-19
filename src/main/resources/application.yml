@@ -5,6 +5,15 @@ spring:
         url: jdbc:mysql://ec2-52-78-73-12.ap-northeast-2.compute.amazonaws.com:3306/nsl?serverTimezone=UTC&characterEncoding=UTF-8
         username: root
         password: 1q2w3e4r!!
+    mail:
+        host: smtp.naver.com 
+        port: 465
+        username: mang906@naver.com
+        password: 1q2w3e4r!!
+        properties:
+            mail.smtp.auth: true
+            mail.smtp.ssl.enable: true
+            mail.smtp.ssl.trust: smtp.naver.com
 
 logging:
     level:
