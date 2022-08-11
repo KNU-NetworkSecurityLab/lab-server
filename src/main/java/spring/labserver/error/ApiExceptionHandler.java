@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import spring.labserver.error.exception.MailMessagingException;
 import spring.labserver.error.exception.RequestDeniedException;
 import spring.labserver.error.exception.UserAlreadyExistException;
 import spring.labserver.error.exception.UserNotAdminException;
@@ -69,7 +70,7 @@ public class ApiExceptionHandler {
     // 403
     // 허가된 요청이 아닐 때
     // 요청한 userId와 현재 로그인한 userId가 다를 때 등
-    @ExceptionHandler(value = {UserNotAdminException.class})
+    @ExceptionHandler(value = {RequestDeniedException.class})
     public ResponseEntity<Object> handlerRequestDeniedException(RequestDeniedException e) {
         
         HttpStatus httpStatus = HttpStatus.FORBIDDEN;
@@ -92,6 +93,22 @@ public class ApiExceptionHandler {
 
         ApiException apiException = new ApiException(
             "You are not Admin",
+            httpStatus,
+            ZonedDateTime.now(ZoneId.of("Z"))
+        );
+
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+    // 500
+    // 이메일 메시지 작성 오류 발생시
+    @ExceptionHandler(value = {MailMessagingException.class})
+    public ResponseEntity<Object> handlerMailMessagingException(MailMessagingException e) {
+        
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        ApiException apiException = new ApiException(
+            "Failed to send email: Internal Server Error",
             httpStatus,
             ZonedDateTime.now(ZoneId.of("Z"))
         );
