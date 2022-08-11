@@ -5,6 +5,15 @@ spring:
         url: jdbc:mariadb://lab-db.cfdztcppxxdo.ap-northeast-2.rds.amazonaws.com/nsl_test?serverTimezone=UTC&characterEncoding=UTF-8
         username: knunslabdbadmin
         password: labdbpassword22
+    mail:
+        host: smtp.gmail.com 
+        port: 587
+        username: 수정필요
+        password: 수정필요
+        properties:
+            mail.smtp.auth: true
+            mail.smtp.starttls.enable: true
+
 logging:
     level:
         root: DEBUG

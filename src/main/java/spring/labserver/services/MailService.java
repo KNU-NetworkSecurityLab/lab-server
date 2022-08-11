@@ -23,7 +23,6 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    @Transactional
     public void sendMail(String to, String newPassword) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -42,9 +41,9 @@ public class MailService {
 
             mailSender.send(mimeMessage);
             logger.info("MailService sendMail() success");
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
-            logger.info("MailService sendMail() fail");
+            logger.info("MailService sendMail() fail :" + e);
             throw new MailMessagingException();
         }
 

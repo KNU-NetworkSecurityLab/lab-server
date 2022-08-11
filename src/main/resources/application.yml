@@ -6,15 +6,13 @@ spring:
         username: knunslabdbadmin
         password: labdbpassword22
     mail:
-        host: smtp.naver.com 
-        port: 465
+        host: smtp.gmail.com 
+        port: 587
         username: 수정필요
         password: 수정필요
         properties:
             mail.smtp.auth: true
-            mail.smtp.ssl.enable: true
-            mail.smtp.ssl.trust: smtp.naver.com
-
+            mail.smtp.starttls.enable: true
 logging:
     level:
         root: DEBUG
