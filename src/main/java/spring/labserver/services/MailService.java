@@ -33,8 +33,10 @@ public class MailService {
             messageHelper.setSubject("[네트워크보안연구실] 임시 비밀번호 발급 안내");
 
             StringBuilder body = new StringBuilder();
-            body.append("[네트워크보안연구실] 임시 비밀번호 발금 안내 메일입니다.\n\n");
-            body.append("발급 받으신 비밀번호는 '" + newPassword + "' 입니다.\n\n");
+            body.append("[네트워크보안연구실] 임시 비밀번호 발급 안내 메일입니다.");
+            body.append("<br><br>");
+            body.append("발급 받으신 비밀번호는 '<b>" + newPassword + "</b>' 입니다.");
+            body.append("<br><br>");
             body.append("해당 비밀번호로 로그인 후 반드시 비밀번호를 변경해 주세요.");
             messageHelper.setText(body.toString(), true);
 

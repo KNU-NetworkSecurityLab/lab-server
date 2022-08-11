@@ -188,13 +188,15 @@ public class UserService {
             if(user.getMail().equals(requestDto.getMail()) && user.getName().equals(requestDto.getName())) {
                 // 아스키 코드 33 ~ 125 사이에서 문자를 골라서 15자리 임시비밀번호 생성
                 String tempPassword = RandomStringUtils.random(15, 33, 125, false, false);
+                logger.info("resetPassword generate tempPassword : " + tempPassword);
                 // 임시 비밀번호 생성, DB 적용
                 user.update(user.getName(), bCryptPasswordEncoder.encode(tempPassword), user.getPhone(), user.getMail(), user.getPosition(), user.getStudentId());
                 // 메일 전송
                 mailService.sendMail(user.getMail(), tempPassword);
-                //
+                logger.info("resetPassword send mail : " + user.getMail());
+
                 Map<String, String> result = new HashMap<>();
-                result.put("msg", "Reset Password Success and Mail Send");
+                result.put("msg", "Reset Password Success and Mail Sended");
                 return ResponseEntity.ok().body(result);
             // 해당 이메일 또는 이름을 가진 아이디가 없다면
             } else {

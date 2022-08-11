@@ -39,6 +39,12 @@ public class UserController {
         return userService.save(user);
     }
 
+    // 비밀번호 초기화
+    @PostMapping("/resetPassword")
+    public ResponseEntity<Object> userResetPassword(@RequestBody UserResetPasswordRequestDto userResetPasswordDto) {        
+        return userService.resetPassword(userResetPasswordDto);
+    }
+    
     // 자신의 회원 정보 조회
     @PostMapping("/user/info")
     public ResponseEntity<Object> userInfo(@RequestHeader("Authorization") String token) {
@@ -56,13 +62,7 @@ public class UserController {
     public ResponseEntity<Object> userDelete(@RequestHeader("Authorization") String token) {        
         return userService.delete(token);
     }    
-
-    // 비밀번호 초기화
-    @PostMapping("/user/reset-password")
-    public ResponseEntity<Object> userResetPassword(@RequestBody UserResetPasswordRequestDto userResetPasswordDto) {        
-        return userService.resetPassword(userResetPasswordDto);
-    }
-    
+   
     // ADMIN만 접근 가능
     // 사용자 권한 수정
     @PutMapping("/admin/authority")
