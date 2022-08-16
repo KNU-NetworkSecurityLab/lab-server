@@ -8,10 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import spring.labserver.error.exception.MailMessagingException;
+import spring.labserver.error.exception.RequestDeniedException;
 import spring.labserver.error.exception.UserAlreadyExistException;
 import spring.labserver.error.exception.UserNotAdminException;
 import spring.labserver.error.exception.UserNotExistException;
-import spring.labserver.error.exception.UserNotMatchException;
 import spring.labserver.error.exception.UserNullException;
 
 // Controller 에서 발생하는 error를 처리하는 클래스
@@ -66,16 +67,16 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, httpStatus);
     }
 
-    //RuntimeException
     // 403
-    // 요청한 userId와 현재 로그인한 userId가 다를 때
-    @ExceptionHandler(value = {UserNotMatchException.class})
-    public ResponseEntity<Object> handlerUserNotMatchException(UserNotMatchException e) {
+    // 허가된 요청이 아닐 때
+    // 요청한 userId와 현재 로그인한 userId가 다를 때 등
+    @ExceptionHandler(value = {RequestDeniedException.class})
+    public ResponseEntity<Object> handlerRequestDeniedException(RequestDeniedException e) {
         
         HttpStatus httpStatus = HttpStatus.FORBIDDEN;
 
         ApiException apiException = new ApiException(
-            "Your userID is not matched",
+            "Not allowed request",
             httpStatus,
             ZonedDateTime.now(ZoneId.of("Z"))
         );
@@ -92,6 +93,22 @@ public class ApiExceptionHandler {
 
         ApiException apiException = new ApiException(
             "You are not Admin",
+            httpStatus,
+            ZonedDateTime.now(ZoneId.of("Z"))
+        );
+
+        return new ResponseEntity<>(apiException, httpStatus);
+    }
+
+    // 500
+    // 이메일 메시지 작성 오류 발생시
+    @ExceptionHandler(value = {MailMessagingException.class})
+    public ResponseEntity<Object> handlerMailMessagingException(MailMessagingException e) {
+        
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        ApiException apiException = new ApiException(
+            "Failed to send email: Internal Server Error",
             httpStatus,
             ZonedDateTime.now(ZoneId.of("Z"))
         );

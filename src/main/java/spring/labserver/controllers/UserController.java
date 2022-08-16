@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import spring.labserver.domain.user.User;
+import spring.labserver.dto.UserResetPasswordRequestDto;
 import spring.labserver.dto.UserRoleUpdateRequestDto;
 import spring.labserver.dto.UserUpdateRequestDto;
 import spring.labserver.services.UserService;
@@ -38,6 +39,12 @@ public class UserController {
         return userService.save(user);
     }
 
+    // 비밀번호 초기화
+    @PostMapping("/resetPassword")
+    public ResponseEntity<Object> userResetPassword(@RequestBody UserResetPasswordRequestDto userResetPasswordDto) {        
+        return userService.resetPassword(userResetPasswordDto);
+    }
+    
     // 자신의 회원 정보 조회
     @PostMapping("/user/info")
     public ResponseEntity<Object> userInfo(@RequestHeader("Authorization") String token) {
@@ -55,7 +62,7 @@ public class UserController {
     public ResponseEntity<Object> userDelete(@RequestHeader("Authorization") String token) {        
         return userService.delete(token);
     }    
-    
+   
     // ADMIN만 접근 가능
     // 사용자 권한 수정
     @PutMapping("/admin/authority")

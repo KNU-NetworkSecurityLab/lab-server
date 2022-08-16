@@ -5,6 +5,9 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,8 +16,10 @@ import lombok.RequiredArgsConstructor;
 import spring.labserver.config.jwt.JwtTokenProvider;
 import spring.labserver.domain.user.User;
 import spring.labserver.domain.user.UserRepository;
+import spring.labserver.dto.UserResetPasswordRequestDto;
 import spring.labserver.dto.UserRoleUpdateRequestDto;
 import spring.labserver.dto.UserUpdateRequestDto;
+import spring.labserver.error.exception.RequestDeniedException;
 import spring.labserver.error.exception.UserAlreadyExistException;
 import spring.labserver.error.exception.UserNotAdminException;
 import spring.labserver.error.exception.UserNotExistException;
@@ -23,8 +28,10 @@ import spring.labserver.error.exception.UserNullException;
 @RequiredArgsConstructor
 @Service
 public class UserService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private final UserRepository userRepository;    
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final MailService mailService;
     private JwtTokenProvider jwtTokenProvider;
 
     // 해당 사용자의 모든 정보 조회 - JWT PrincipalDetailsService에 사용
@@ -106,19 +113,22 @@ public class UserService {
     // 회원 정보 갱신
     @Transactional
     public ResponseEntity<Object> update(String token, UserUpdateRequestDto requestDto) {
-        // 요청한 userId와 현재 로그인한 userId가 다르다면
+        // requestDto 중에 NULL이면        
+        if(requestDto.getUserId() == null | requestDto.getMail() == null | requestDto.getPassword() == null | requestDto.getPhone() == null | requestDto.getName() == null | requestDto.getPosition() == null | requestDto.getStudentId() == null) {            
+            throw new UserNullException();
+        }
+        if(requestDto.getUserId().length() == 0 | requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0 | requestDto.getPosition().length() == 0 | requestDto.getStudentId().length() == 0) {
+            throw new UserNullException();
+        }
+
         jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
         String userId = jwtTokenProvider.getUserIdFromJWT();
-
-        // requestDto 중에 NULL이면        
-        if(userId == null | requestDto.getMail() == null | requestDto.getPassword() == null | requestDto.getPhone() == null | requestDto.getName() == null | requestDto.getPosition() == null | requestDto.getStudentId() == null) {            
-            throw new UserNullException();
-        }
-        if(userId.length() == 0 | requestDto.getMail().length() == 0 | requestDto.getPassword().length() == 0 | requestDto.getPhone().length() == 0 | requestDto.getName().length() == 0 | requestDto.getPosition().length() == 0 | requestDto.getStudentId().length() == 0) {
-            throw new UserNullException();
+        // 요청한 userId와 현재 로그인한 userId가 다르다면
+        if (!userId.equals(requestDto.getUserId())) {
+            throw new RequestDeniedException();
         }
 
-        // 해당 아이디가 있는지 확인 후 update
+        // 해당 아이디가 DB에 있는지 확인 후 update
         if(userRepository.existsByUserId(userId)) {
             User user = userRepository.findByUserId(userId);
             user.update(requestDto.getName(), bCryptPasswordEncoder.encode(requestDto.getPassword()), requestDto.getPhone(), requestDto.getMail(), requestDto.getPosition(), requestDto.getStudentId());
@@ -135,7 +145,7 @@ public class UserService {
     // 회원 탈퇴
     @Transactional
     public ResponseEntity<Object> delete(String token) {
-        // 요청한 userId와 현재 로그인한 userId가 다르다면
+        // JWT 토큰으로부터 현재 로그인한 userId 가져오기
         jwtTokenProvider = JwtTokenProvider.builder().encodeJwt(token).build();
         String userId = jwtTokenProvider.getUserIdFromJWT();
 
@@ -158,7 +168,45 @@ public class UserService {
         } else {
             throw new UserNotExistException();
         }
-    }     
+    }   
+    
+    // 비밀번호 초기화
+    @Transactional
+    public ResponseEntity<Object> resetPassword(UserResetPasswordRequestDto requestDto) {
+
+        // requestDto 중에 NULL이면        
+        if(requestDto.getUserId() == null | requestDto.getMail() == null | requestDto.getName() == null) {            
+            throw new UserNullException();
+        }
+        if(requestDto.getUserId().length() == 0 | requestDto.getMail().length() == 0 | requestDto.getName().length() == 0) {
+            throw new UserNullException();
+        }
+
+        // 해당 아이디가 있는지 확인 후 비밀번호 초기화 진행
+        if(userRepository.existsByUserId(requestDto.getUserId())) {
+            User user = userRepository.findByUserId(requestDto.getUserId());
+            if(user.getMail().equals(requestDto.getMail()) && user.getName().equals(requestDto.getName())) {
+                // 아스키 코드 33 ~ 125 사이에서 문자를 골라서 15자리 임시비밀번호 생성
+                String tempPassword = RandomStringUtils.random(15, 33, 125, false, false);
+                logger.info("resetPassword generate tempPassword : " + tempPassword);
+                // 임시 비밀번호 생성, DB 적용
+                user.update(user.getName(), bCryptPasswordEncoder.encode(tempPassword), user.getPhone(), user.getMail(), user.getPosition(), user.getStudentId());
+                // 메일 전송
+                mailService.sendMail(user.getMail(), tempPassword);
+                logger.info("resetPassword send mail : " + user.getMail());
+
+                Map<String, String> result = new HashMap<>();
+                result.put("msg", "Reset Password Success and Mail Sended");
+                return ResponseEntity.ok().body(result);
+            // 해당 이메일 또는 이름을 가진 아이디가 없다면
+            } else {
+                throw new UserNotExistException();
+            }        
+        // 해당 아이디가 없다면
+        } else {
+            throw new UserNotExistException();
+        }
+    } 
 
     // ADMIN
     // ADMIN이 회원들의 직위 변경

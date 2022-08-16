@@ -1,11 +1,18 @@
 # MySQL 데이터베이스 세팅(local)
 spring:
     datasource:
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://ec2-52-78-73-12.ap-northeast-2.compute.amazonaws.com:3306/nsl?serverTimezone=UTC&characterEncoding=UTF-8
-        username: root
-        password: 1q2w3e4r!!
-
+        driver-class-name: org.mariadb.jdbc.Driver
+        url: jdbc:mariadb://lab-db.cfdztcppxxdo.ap-northeast-2.rds.amazonaws.com/nsl?serverTimezone=UTC&characterEncoding=UTF-8
+        username: knunslabdbadmin
+        password: labdbpassword22
+    mail:
+        host: smtp.gmail.com 
+        port: 587
+        username: 수정필요
+        password: 수정필요
+        properties:
+            mail.smtp.auth: true
+            mail.smtp.starttls.enable: true
 logging:
     level:
         root: DEBUG
